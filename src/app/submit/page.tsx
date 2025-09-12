@@ -5,13 +5,48 @@ import { useState } from "react"
 export default function SubmitPage() {
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("Submitted Blog:", { title, content })
-    alert("Your blog has been submitted! 🚀")
-    setTitle("")
-    setContent("")
+    setLoading(true)
+    setError("")
+    setSuccess("")
+
+    try {
+      const token = localStorage.getItem("token") // 🔑 assuming token is stored in localStorage after login
+      if (!token) {
+        setError("You must be logged in to submit a blog.")
+        setLoading(false)
+        return
+      }
+
+      const res = await fetch("/api/posts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // ✅ attach JWT
+        },
+        body: JSON.stringify({ title, content }),
+      })
+
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || "Failed to submit blog")
+      }
+
+      const data = await res.json()
+      setSuccess("Your blog has been submitted! 🚀")
+      setTitle("")
+      setContent("")
+      console.log("Created Post:", data)
+    } catch (err: any) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -54,12 +89,17 @@ export default function SubmitPage() {
           />
         </div>
 
+        {/* Error / Success Messages */}
+        {error && <p className="text-red-600 text-sm">{error}</p>}
+        {success && <p className="text-green-600 text-sm">{success}</p>}
+
         {/* Submit Button */}
         <button
           type="submit"
-          className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition"
+          disabled={loading}
+          className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition disabled:opacity-50"
         >
-          Submit Blog
+          {loading ? "Submitting..." : "Submit Blog"}
         </button>
       </form>
     </section>

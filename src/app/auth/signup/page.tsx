@@ -1,21 +1,44 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function SignupPage() {
-  const [username, setUsername] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
 
-  const handleSignup = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("Signup:", { username, email, password })
-    alert("Account created successfully 🎉")
-    setUsername("")
-    setEmail("")
-    setPassword("")
-  }
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_name: userName, email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Signup failed");
+      }
+
+      // Success → redirect to login
+      alert("Account created successfully 🎉 Please login");
+      router.push("/login");
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <section className="max-w-md mx-auto py-12">
@@ -34,8 +57,8 @@ export default function SignupPage() {
           </label>
           <input
             type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
             placeholder="Enter your username"
             className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
             required
@@ -72,22 +95,28 @@ export default function SignupPage() {
           />
         </div>
 
+        {/* Error Message */}
+        {error && (
+          <p className="text-red-500 text-sm font-medium text-center">{error}</p>
+        )}
+
         {/* Signup Button */}
         <button
           type="submit"
-          className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition"
+          disabled={loading}
+          className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition disabled:opacity-50"
         >
-          Signup
+          {loading ? "Signing up..." : "Signup"}
         </button>
 
         {/* Login Link */}
         <p className="text-center text-gray-600 text-sm">
           Already have an account?{" "}
-          <Link href="/auth/login" className="text-indigo-600 hover:underline">
+          <Link href="/login" className="text-indigo-600 hover:underline">
             Login
           </Link>
         </p>
       </form>
     </section>
-  )
+  );
 }
