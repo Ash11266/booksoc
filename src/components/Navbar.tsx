@@ -21,6 +21,7 @@ export default function Navbar() {
         <div className="space-x-6 text-white font-medium">
           <Link href="/" className="hover:text-yellow-400">Home</Link>
           <Link href="/submit" className="hover:text-yellow-400">Submit</Link>
+          <Link href="/dashboard" className="hover:text-yellow-400">Dashboard</Link>
           <Link href="/auth/login" className="hover:text-yellow-400">Login</Link>
           <Link href="/auth/signup" className="hover:text-yellow-400">Signup</Link>
         </div>

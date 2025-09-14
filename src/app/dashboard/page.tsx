@@ -9,13 +9,19 @@ interface Post {
   created_at: string
 }
 
+interface User {
+  userid: string
+  username: string
+}
+
 export default function DashboardPage() {
+  const [user, setUser] = useState<User | null>(null)
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
 
   useEffect(() => {
-    const fetchPosts = async () => {
+    const fetchDashboard = async () => {
       try {
         const token = localStorage.getItem("token")
         if (!token) {
@@ -33,11 +39,12 @@ export default function DashboardPage() {
 
         if (!res.ok) {
           const data = await res.json()
-          throw new Error(data.error || "Failed to load posts")
+          throw new Error(data.error || "Failed to load dashboard")
         }
 
-        const data: Post[] = await res.json()
-        setPosts(data)
+        const data = await res.json()
+        setUser(data.user)
+        setPosts(data.posts || [])
       } catch (err: any) {
         setError(err.message)
       } finally {
@@ -45,23 +52,25 @@ export default function DashboardPage() {
       }
     }
 
-    fetchPosts()
+    fetchDashboard()
   }, [])
 
   return (
     <section className="max-w-3xl mx-auto py-12">
-      <h1 className="text-3xl font-bold text-center text-indigo-600 mb-8">
-        Your Dashboard 📊
+      <h1 className="text-3xl font-bold text-center text-indigo-600 mb-4">
+        {user ? `Welcome, ${user.username} 👋` : "Your Dashboard 📊"}
       </h1>
 
-      {loading && <p className="text-center text-gray-600">Loading posts...</p>}
+      {loading && <p className="text-center text-gray-600">Loading dashboard...</p>}
       {error && <p className="text-center text-red-600">{error}</p>}
 
       {!loading && !error && posts.length === 0 && (
-        <p className="text-center text-gray-500">No posts yet. Start writing! ✍️</p>
+        <p className="text-center text-gray-500">
+          No posts yet. Start writing! ✍️
+        </p>
       )}
 
-      <div className="space-y-6">
+      <div className="space-y-6 mt-6">
         {posts.map((post) => (
           <article
             key={post.post_id}
