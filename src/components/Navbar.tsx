@@ -1,7 +1,28 @@
+"use client";
+
+
 import Link from "next/link"
 import Image from "next/image"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setIsLoggedIn(false);
+    router.push("/login");
+  };
+
   return (
     <nav className="bg-black shadow-md sticky top-0 z-50">
       <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
@@ -9,9 +30,9 @@ export default function Navbar() {
         {/* Left side: Booksoc logo */}
         <Link href="/">
           <Image
-            src="/booksoclogo.jpeg"
+            src="/booksoclogo2.jpeg"
             alt="Booksoc Logo"
-            width={80}
+            width={120}
             height={80}
             priority
           />
@@ -21,9 +42,29 @@ export default function Navbar() {
         <div className="space-x-6 text-white font-medium">
           <Link href="/" className="hover:text-yellow-400">Home</Link>
           <Link href="/submit" className="hover:text-yellow-400">Submit</Link>
-          <Link href="/dashboard" className="hover:text-yellow-400">Dashboard</Link>
-          <Link href="/auth/login" className="hover:text-yellow-400">Login</Link>
-          <Link href="/auth/signup" className="hover:text-yellow-400">Signup</Link>
+
+          {isLoggedIn ? (
+            <>
+              <Link href="/dashboard" className="hover:text-yellow-400">
+                Dashboard
+              </Link>
+             <button
+                onClick={handleLogout}
+                className="hover:text-yellow-400"
+              >
+               Logout
+             </button>
+            </>
+         ) : (
+            <>
+             <Link href="/auth/login" className="hover:text-yellow-400">
+                Login
+              </Link>
+              <Link href="/auth/signup" className="hover:text-yellow-400">
+                Signup
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </nav>

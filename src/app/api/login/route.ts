@@ -33,14 +33,14 @@ export async function POST(req: Request) {
     // Check password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return new Response(JSON.stringify({ error: "Invalid credentials" }), { status: 401 });
+      return new Response(JSON.stringify({ error: "Invalid password" }), { status: 401 });
     }
 
     // Sign JWT
     const token = jwt.sign(
       { userid: user.userid, email: user.email },
       process.env.JWT_SECRET as string,
-      { expiresIn: "7d" }
+      { expiresIn: "7h" }
     );
 
     // Return token + user info

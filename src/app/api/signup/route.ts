@@ -1,5 +1,6 @@
 import pool from "@/lib/db";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export const runtime = "nodejs";
 
@@ -23,7 +24,26 @@ export async function POST(req: Request) {
       [user_name, email.toLowerCase(), hashedPassword] // lowercase email for consistency
     );
 
-    return new Response(JSON.stringify(result.rows[0]), { status: 201 });
+    const user = result.rows[0];
+
+    const token = jwt.sign(
+          { userid: user.userid, email: user.email },
+          process.env.JWT_SECRET as string,
+          { expiresIn: "7h" }
+        );
+    
+        // Return token + user info
+        return new Response(
+          JSON.stringify({
+            token,
+            user: {
+              userid: user.userid,
+              user_name: user.user_name,
+              email: user.email,
+            },
+          }),
+
+    /*return new Response(JSON.stringify(result.rows[0]),*/ { status: 201 });
   } catch (err: any) {
     console.error("Signup error:", err);
 

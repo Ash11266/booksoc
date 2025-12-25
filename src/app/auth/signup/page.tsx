@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import toast, { Toaster } from 'react-hot-toast';
 import { useRouter } from "next/navigation";
 
 export default function SignupPage() {
@@ -31,8 +32,12 @@ export default function SignupPage() {
       }
 
       // Success → redirect to login
-      alert("Account created successfully 🎉 Please login");
-      router.push("/login");
+      alert("Account created successfully🎉");
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+    router.push("/dashboard");
+      /*router.push("/auth/login");*/
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -56,6 +61,7 @@ export default function SignupPage() {
             Username
           </label>
           <input
+            id="username"
             type="text"
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
@@ -71,6 +77,7 @@ export default function SignupPage() {
             Email
           </label>
           <input
+            id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -86,6 +93,7 @@ export default function SignupPage() {
             Password
           </label>
           <input
+            id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -112,7 +120,7 @@ export default function SignupPage() {
         {/* Login Link */}
         <p className="text-center text-gray-600 text-sm">
           Already have an account?{" "}
-          <Link href="/login" className="text-indigo-600 hover:underline">
+          <Link href="/auth/login" className="text-indigo-600 hover:underline">
             Login
           </Link>
         </p>
