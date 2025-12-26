@@ -1,4 +1,5 @@
 import "./globals.css"
+import { AuthProvider } from "@/context/AuthContext";
 import Navbar from "@/components/Navbar"
 import Image from "next/image"
 
@@ -16,13 +17,16 @@ export default function RootLayout({
     <html lang="en">
       <body className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
         
+        <AuthProvider>
         {/* Navbar */}
         <Navbar />
+        
 
         {/* Page Content */}
         <main className="flex-1 max-w-6xl mx-auto px-4 py-8">
           {children}
         </main>
+        </AuthProvider>
 
         {/* Footer with SAASC logo */}
         <footer className="bg-black text-gray-300 text-center py-6 mt-8">

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import toast, { Toaster } from 'react-hot-toast';
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export default function SignupPage() {
   const [userName, setUserName] = useState("");
@@ -12,6 +13,7 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,9 +35,10 @@ export default function SignupPage() {
 
       // Success → redirect to login
       alert("Account created successfully🎉");
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      /*localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));*/
 
+      login(data.token, data.user);
     router.push("/dashboard");
       /*router.push("/auth/login");*/
     } catch (err: any) {

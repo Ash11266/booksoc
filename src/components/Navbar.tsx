@@ -5,10 +5,12 @@ import Link from "next/link"
 import Image from "next/image"
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Navbar() {
+  const { isLoggedIn, logout } = useAuth();
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  /*const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -21,7 +23,7 @@ export default function Navbar() {
     localStorage.removeItem("user");
     setIsLoggedIn(false);
     router.push("/login");
-  };
+  };*/
 
   return (
     <nav className="bg-black shadow-md sticky top-0 z-50">
@@ -43,21 +45,18 @@ export default function Navbar() {
           <Link href="/" className="hover:text-yellow-400">Home</Link>
           <Link href="/submit" className="hover:text-yellow-400">Submit</Link>
 
-          {isLoggedIn ? (
+              {isLoggedIn ? (
             <>
               <Link href="/dashboard" className="hover:text-yellow-400">
                 Dashboard
               </Link>
-             <button
-                onClick={handleLogout}
-                className="hover:text-yellow-400"
-              >
-               Logout
-             </button>
+              <button onClick={logout} className="hover:text-yellow-400">
+                Logout
+              </button>
             </>
-         ) : (
+          ) : (
             <>
-             <Link href="/auth/login" className="hover:text-yellow-400">
+              <Link href="/auth/login" className="hover:text-yellow-400">
                 Login
               </Link>
               <Link href="/auth/signup" className="hover:text-yellow-400">
